@@ -5,10 +5,25 @@ using UnityEditor;
 
 public class AssetLoader3 : MonoBehaviour
 {
-    [SerializeField]
-    public LoaderModule LoaderModule;
 
-    private async void Start()
+    public LoaderModule LoaderModule
+    {
+        get
+        {
+            LoaderModule loaderModule = FindFirstObjectByType<LoaderModule>();
+            if (loaderModule == null)
+            {
+                GameObject ldr = new GameObject() { name = "@LoadModule" };
+                ldr.AddComponent<LoaderModule>();
+
+                return ldr.GetComponent<LoaderModule>();
+            }
+
+            return loaderModule;
+        }
+    }
+
+    async void Start()
     {
         string selectedAssetName = EditorUtility.OpenFilePanel("Select obj model", "", "obj");
 
@@ -22,7 +37,7 @@ public class AssetLoader3 : MonoBehaviour
         await LoadAllAssetsAsync(objFileNames);
     }
 
-    private async Task LoadAllAssetsAsync(List<string> objFileNames)
+    async Task LoadAllAssetsAsync(List<string> objFileNames)
     {
         List<Task> loadTasks = new List<Task>();
 
@@ -35,12 +50,14 @@ public class AssetLoader3 : MonoBehaviour
         await Task.WhenAll(loadTasks);
     }
 
-    private async Task LoadAssetAsync(string assetName)
+    async Task LoadAssetAsync(string assetName)
     {
         try
         {
             GameObject loadedAsset = await LoaderModule.LoadAssetAsync(assetName);
             loadedAsset.transform.SetParent(transform);
+            // To Do
+            Debug.Log("Complete load asset: " + loadedAsset.name);
         }
         catch (System.Exception e)
         {

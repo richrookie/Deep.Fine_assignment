@@ -4,34 +4,28 @@ using UnityEngine;
 
 public class AssetLoader2 : MonoBehaviour
 {
-    [SerializeField]
-    public LoaderModule LoaderModule;
-
-    private async void Start()
+    public LoaderModule LoaderModule
     {
-        string selectedAssetName = EditorUtility.OpenFilePanel("Select obj model", "", "obj");
-        await Load(selectedAssetName);
+        get
+        {
+            LoaderModule loaderModule = FindFirstObjectByType<LoaderModule>();
+            if (loaderModule == null)
+            {
+                GameObject ldr = new GameObject() { name = "@LoadModule" };
+                ldr.AddComponent<LoaderModule>();
+
+                return ldr.GetComponent<LoaderModule>();
+            }
+
+            return loaderModule;
+        }
     }
 
-
-    private string GetRelativePath(string absolutePath)
+    async void Start()
     {
-        string projectPath = Application.dataPath;
-        projectPath = projectPath.Substring(0, projectPath.Length - "Assets".Length); // Remove "Assets" from the path
+        string selectedAssetName = EditorUtility.OpenFilePanel("Select obj model", "", "obj");
 
-        if (absolutePath.StartsWith(projectPath))
-        {
-            string relativePath = absolutePath.Substring(projectPath.Length);
-            // Remove "Assets/Resources/" part
-            string assetName = relativePath.Substring("Assets/Resources/".Length);
-
-            return assetName;
-        }
-        else
-        {
-            Debug.LogError("Selected file is not within the project folder.");
-            return null;
-        }
+        await Load(selectedAssetName);
     }
 
 
@@ -39,5 +33,7 @@ public class AssetLoader2 : MonoBehaviour
     {
         GameObject loadedAsset = await LoaderModule.LoadAssetAsync(assetName);
         loadedAsset.transform.SetParent(transform);
+        // To Do
+        Debug.Log("Complete load asset: " + loadedAsset.name);
     }
 }
