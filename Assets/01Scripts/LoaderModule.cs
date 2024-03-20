@@ -130,8 +130,8 @@ public class LoaderModule : MonoBehaviour
                     Vector3 vertex = new Vector3(x, y, z);
 
                     GameObject cube = Instantiate(CubePrefab);
-                    cube.transform.position = vertex;
                     cube.transform.SetParent(loadedObject.transform);
+                    cube.transform.localPosition = vertex;
 
                     count++;
                     if (count >= batchSize)
