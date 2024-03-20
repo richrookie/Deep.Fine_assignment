@@ -13,6 +13,12 @@
 
 <br>
 
-### 2. 렌더링 결과물 확인  ex) 1.
+### 2. 렌더링 결과물 확인
+1.
 <img src="https://github.com/richrookie/Deep.Fine_assignment/assets/83854046/0b5660a2-3c97-4241-b7de-f1c6d2a21e05" alt="Description" width="700" />
 
+2.
+<img src="https://github.com/richrookie/Deep.Fine_assignment/assets/83854046/d30bcbf5-b40f-49c6-9f70-b4345e03de71" alt="Description" width="700" />
+
+3.
+<img src="https://github.com/richrookie/Deep.Fine_assignment/assets/83854046/c734da47-c0a0-46f8-9efa-261059b5d6b0" alt="Description" width="700" />
