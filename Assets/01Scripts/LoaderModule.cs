@@ -5,11 +5,72 @@ using System.IO;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
 
+
+#region 객체를 한 번에 Instantiate 하고 싶은 경우
+// === 1. === //
+// IEnumerator LoadAssetCoroutine(string assetName)
+// {
+//     // 경로에 위치된 파일네임에서 확장자명 제외 네임 반환 -
+//     string assetNameWithoutExtension = Path.GetFileNameWithoutExtension(assetName);
+
+//     // 비동기 작업을 위한 Resources.LoadAsync() 사용 (동적 로딩)
+//     // 때문에 메인 스레드가 차단되지 않고 계속 실행될 수 있음
+//     ResourceRequest request = Resources.LoadAsync(assetNameWithoutExtension, typeof(GameObject));
+
+//     // 로딩이 완료될 때까지 대기 = 코루틴 중단점
+//     yield return request;
+
+//     if (request.asset != null)
+//     {
+//         GameObject loadedObject = Instantiate((GameObject)request.asset);
+
+//         OnLoadCompleted?.Invoke(loadedObject);
+//     }
+//     else
+//     {
+//         Debug.LogError("Failed to load asset: " + assetName);
+//     }
+// }
+
+
+//=== 2. 3. === //
+// <summary>
+// 표준 C# 비동기 방식
+// </summary>
+// <param name = "assetName" > 로드할 assetName</param>
+// <returns></returns>
+// public async Task<GameObject> LoadAssetAsync(string assetName)
+// {
+//     string assetNameWithoutExtension = Path.GetFileNameWithoutExtension(assetName);
+
+//     ResourceRequest request = Resources.LoadAsync<GameObject>(assetNameWithoutExtension);
+
+//     TaskCompletionSource<GameObject> tcs = new TaskCompletionSource<GameObject>();
+
+//     request.completed += operation =>
+//     {
+//         if (request.asset != null)
+//         {
+//             GameObject loadedObject = Instantiate((GameObject)request.asset);
+
+//             tcs.SetResult(loadedObject);
+//         }
+//         else
+//         {
+//             tcs.SetException(new Exception("Failed to load asset: " + assetName));
+//         }
+//     };
+
+//     return await tcs.Task;
+// }
+#endregion
+
+
 public class LoaderModule : MonoBehaviour
 {
     GameObject CubePrefab = null;
 
-    private void Start()
+    void Awake()
     {
         CubePrefab = Resources.Load("CubePrefab") as GameObject;
     }
@@ -23,30 +84,6 @@ public class LoaderModule : MonoBehaviour
         // 코루틴을 사용한 리소스 비동기적 로딩
         StartCoroutine(LoadAssetCoroutine(assetName));
     }
-
-    // IEnumerator LoadAssetCoroutine(string assetName)
-    // {
-    //     // 경로에 위치된 파일네임에서 확장자명 제외 네임 반환 -
-    //     string assetNameWithoutExtension = Path.GetFileNameWithoutExtension(assetName);
-
-    //     // 비동기 작업을 위한 Resources.LoadAsync() 사용 (동적 로딩)
-    //     // 때문에 메인 스레드가 차단되지 않고 계속 실행될 수 있음
-    //     ResourceRequest request = Resources.LoadAsync(assetNameWithoutExtension, typeof(GameObject));
-
-    //     // 로딩이 완료될 때까지 대기 = 코루틴 중단점
-    //     yield return request;
-
-    //     if (request.asset != null)
-    //     {
-    //         GameObject loadedObject = Instantiate((GameObject)request.asset);
-
-    //         OnLoadCompleted?.Invoke(loadedObject);
-    //     }
-    //     else
-    //     {
-    //         Debug.LogError("Failed to load asset: " + assetName);
-    //     }
-    // }
 
     /// <summary>
     /// Unity 기능을 활용한 비동기 방식
@@ -63,6 +100,7 @@ public class LoaderModule : MonoBehaviour
 
             if (uwr.result == UnityWebRequest.Result.Success)
             {
+                Debug.Log("Downloaded data: " + uwr.downloadHandler.text);
                 yield return LoadObjModel(uwr.downloadHandler.text);
             }
             else
@@ -72,7 +110,7 @@ public class LoaderModule : MonoBehaviour
         }
     }
 
-    private IEnumerator LoadObjModel(string objData)
+    IEnumerator LoadObjModel(string objData)
     {
         GameObject loadedObject = new GameObject("LoadedObject");
         string[] lines = objData.Split('\n');
@@ -115,36 +153,6 @@ public class LoaderModule : MonoBehaviour
     #region 2. 3.
     [SerializeField]
     int _batchSize = 1000;
-    // <summary>
-    // 표준 C# 비동기 방식
-    // </summary>
-    // <param name = "assetName" > 로드할 assetName</param>
-    // <returns></returns>
-    // public async Task<GameObject> LoadAssetAsync(string assetName)
-    // {
-    //     string assetNameWithoutExtension = Path.GetFileNameWithoutExtension(assetName);
-
-    //     ResourceRequest request = Resources.LoadAsync<GameObject>(assetNameWithoutExtension);
-
-    //     TaskCompletionSource<GameObject> tcs = new TaskCompletionSource<GameObject>();
-
-    //     request.completed += operation =>
-    //     {
-    //         if (request.asset != null)
-    //         {
-    //             GameObject loadedObject = Instantiate((GameObject)request.asset);
-
-    //             tcs.SetResult(loadedObject);
-    //         }
-    //         else
-    //         {
-    //             tcs.SetException(new Exception("Failed to load asset: " + assetName));
-    //         }
-    //     };
-
-    //     return await tcs.Task;
-    // }
-
 
     public async Task<GameObject> LoadAssetAsync(string assetName)
     {
@@ -165,11 +173,13 @@ public class LoaderModule : MonoBehaviour
             return null;
         }
 
+        Debug.Log("Downloaded data: " + uwr.downloadHandler.text);
+
         return await LoadObjModelAsync(uwr.downloadHandler.text);
     }
 
     int order = 0;
-    private async Task<GameObject> LoadObjModelAsync(string objData)
+    async Task<GameObject> LoadObjModelAsync(string objData)
     {
         GameObject loadedObject = new GameObject("LoadedObject");
         loadedObject.transform.localPosition = new Vector3(0, 0, order * 200);
@@ -209,3 +219,4 @@ public class LoaderModule : MonoBehaviour
     }
     #endregion
 }
+

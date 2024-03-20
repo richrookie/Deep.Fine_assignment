@@ -23,7 +23,7 @@ public class AssetLoader : MonoBehaviour
     void Start()
     {
         string selectedAssetPath = EditorUtility.OpenFilePanel("Select obj model", "", "obj");
-        print(selectedAssetPath);
+
         Load(selectedAssetPath);
     }
 
