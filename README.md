@@ -20,5 +20,5 @@
 2. C# async/await
 <img src="https://github.com/richrookie/Deep.Fine_assignment/assets/83854046/d30bcbf5-b40f-49c6-9f70-b4345e03de71" alt="Description" width="700" />
 
-3. C# async/await
+3. C# async/await - 20개
 <img src="https://github.com/richrookie/Deep.Fine_assignment/assets/83854046/c734da47-c0a0-46f8-9efa-261059b5d6b0" alt="Description" width="700" />
