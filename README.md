@@ -1,5 +1,8 @@
 ## Deep.Fine_Tech-Screening
 
+### [유니티 버전]
+- 2022.3.21f1
+
 ### [프로젝트 구성]
 - **00Scenes** : 1_LoadAsset, 2_LoadAssetAsync, 3_LoadAssetAsync
 - **01Scripts** : AssetLoader, AssetLoader2, AssetLoader3, LoaderModule
